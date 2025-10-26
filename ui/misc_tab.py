@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess, webbrowser, threading
 from script.logger import LogText
-from PIL import Image, ImageTk  # pip install pillow
+from PIL import Image, ImageTk 
+from utils import resource_path
 
 class MiscTab(ttk.Frame):
     def __init__(self, parent):
@@ -27,7 +28,7 @@ class MiscTab(ttk.Frame):
 
         # 微信二维码
         try:
-            img = Image.open("ui/wechat.png")
+            img = Image.open(resource_path("ui/wechat.png"))
             img = img.resize((200, 200))
             self.qr_img = ImageTk.PhotoImage(img)
             wx_frame = ttk.Frame(donate_frame)
@@ -39,7 +40,7 @@ class MiscTab(ttk.Frame):
 
         # USDT 二维码 + 地址
         try:
-            cimg = Image.open("ui/usdt.png")
+            cimg = Image.open(resource_path("ui/usdt.png"))
             cimg = cimg.resize((200, 200))
             self.usdt_img = ImageTk.PhotoImage(cimg)
             usdt_frame = ttk.Frame(donate_frame)
