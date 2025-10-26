@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-import subprocess
 from script.logger import LogText
 from script.storage import Storage
 from script.runner import CloudflareRunner
+import subprocess
 
 class ServerTab(ttk.Frame):
     def __init__(self, parent):
@@ -11,26 +11,42 @@ class ServerTab(ttk.Frame):
         self.storage = Storage()
         self.runner = CloudflareRunner(lambda msg: self.log.write_raw(msg))
 
-        # 输入区
         ttk.Label(self, text="隧道名字:").grid(row=0, column=0, sticky="w", padx=6, pady=6)
-        self.tunnel_entry = ttk.Entry(self)
+
+        def validate_tunnel(P):
+            if P.isalpha() or P == "":
+                self.tunnel_entry.state(["!invalid"])
+                return True
+            else:
+                self.tunnel_entry.state(["invalid"])
+                return True
+
+        vcmd_tunnel = (self.register(validate_tunnel), "%P")
+        self.tunnel_entry = ttk.Entry(self, validate="key", validatecommand=vcmd_tunnel)
         self.tunnel_entry.grid(row=0, column=1, sticky="ew", padx=6, pady=6)
 
         ttk.Label(self, text="端口号:").grid(row=1, column=0, sticky="w", padx=6, pady=6)
-        self.port_entry = ttk.Entry(self)
+
+        def validate_port(P):
+            if P.isdigit() or P == "":
+                self.port_entry.state(["!invalid"])
+                return True
+            else:
+                self.port_entry.state(["invalid"])
+                return True
+
+        vcmd_port = (self.register(validate_port), "%P")
+        self.port_entry = ttk.Entry(self, validate="key", validatecommand=vcmd_port)
         self.port_entry.grid(row=1, column=1, sticky="ew", padx=6, pady=6)
 
-        # 恢复上次输入
         last = self.storage.load_last("server")
         if last:
             self.tunnel_entry.insert(0, last.get("tunnel", ""))
             self.port_entry.insert(0, last.get("port", ""))
 
-        # 按钮：创建 + 启动
         ttk.Button(self, text="创建隧道", command=self.create_tunnel).grid(row=2, column=0, padx=6, pady=8)
         ttk.Button(self, text="启动隧道", command=self.start_tunnel).grid(row=2, column=1, padx=6, pady=8, sticky="w")
 
-        # 隧道列表 Treeview
         columns = ("id", "name", "created", "connections")
         self.tree = ttk.Treeview(self, columns=columns, show="headings", height=10)
         self.tree.heading("id", text="ID")
@@ -43,26 +59,21 @@ class ServerTab(ttk.Frame):
         self.tree.column("connections", width=260, anchor="w")
         self.tree.grid(row=3, column=0, columnspan=2, sticky="nsew", padx=6, pady=6)
 
-        # 双击填充 NAME 到输入框
         self.tree.bind("<Double-1>", self.on_tree_double_click)
 
-        # 工具栏
         bar = ttk.Frame(self)
         bar.grid(row=4, column=0, columnspan=2, sticky="ew", padx=6, pady=2)
         ttk.Button(bar, text="刷新隧道列表", command=self.refresh_tunnels).pack(side="left", padx=2)
-        ttk.Button(bar, text="删除隧道", command=self.delete_tunnel).pack(side="left", padx=2)   # ✅ 新增
+        ttk.Button(bar, text="删除隧道", command=self.delete_tunnel).pack(side="left", padx=2)
         ttk.Button(bar, text="清空日志", command=self.clear_log).pack(side="left", padx=2)
 
-        # 日志
         self.log = LogText(self, height=10)
         self.log.grid(row=5, column=0, columnspan=2, sticky="nsew", padx=6, pady=6)
 
-        # 布局权重
         self.columnconfigure(1, weight=1)
         self.rowconfigure(3, weight=1)
         self.rowconfigure(5, weight=1)
 
-        # 启动时自动刷新
         self.after(200, self.refresh_tunnels)
 
     def clear_log(self):
@@ -70,8 +81,8 @@ class ServerTab(ttk.Frame):
 
     def create_tunnel(self):
         name = self.tunnel_entry.get().strip()
-        if not name:
-            self.log.write("[ERROR] 隧道名不能为空")
+        if not name or not name.isalpha():
+            self.log.write("[ERROR] 隧道名不能为空且只能包含字母")
             return
         self.runner.run_command(["cloudflared", "tunnel", "create", name])
         self.log.write(f"[INFO] 已创建隧道 {name}")
@@ -80,7 +91,7 @@ class ServerTab(ttk.Frame):
     def start_tunnel(self):
         name = self.tunnel_entry.get().strip()
         port = self.port_entry.get().strip()
-        if not name or not port.isdigit():
+        if not name.isalpha() or not port.isdigit():
             self.log.write("[ERROR] 隧道名或端口错误")
             return
         self.runner.run_command(["cloudflared", "tunnel", "--name", name, "--url", f"tcp://127.0.0.1:{port}"])
@@ -88,14 +99,14 @@ class ServerTab(ttk.Frame):
         self.storage.save_last("server", name, port)
 
     def refresh_tunnels(self):
-        """刷新并显示所有隧道到 Treeview"""
         self.tree.delete(*self.tree.get_children())
         try:
             result = subprocess.run(
                 ["cloudflared", "tunnel", "list"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                text=True
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW   #防止弹出黑框
             )
             lines = result.stdout.splitlines()
             count = 0
@@ -120,7 +131,6 @@ class ServerTab(ttk.Frame):
             self.log.write(f"[ERROR] 刷新隧道列表失败: {e}")
 
     def delete_tunnel(self):
-        """删除选中的隧道（带确认对话框）"""
         selected = self.tree.selection()
         if not selected:
             self.log.write("[WARN] 请先选择要删除的隧道")
@@ -130,20 +140,18 @@ class ServerTab(ttk.Frame):
             self.log.write("[ERROR] 无法获取隧道名")
             return
         tunnel_name = values[1]
-
-        # ✅ 弹出确认对话框
         confirm = messagebox.askyesno("确认删除", f"确定要删除隧道 '{tunnel_name}' 吗？")
         if not confirm:
             self.log.write(f"[INFO] 已取消删除隧道 {tunnel_name}")
             return
-
         self.log.write(f"[INFO] 正在删除隧道 {tunnel_name} ...")
         try:
             result = subprocess.run(
                 ["cloudflared", "tunnel", "delete", tunnel_name],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                text=True
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW   #防止弹出黑框
             )
             if result.returncode == 0:
                 self.log.write(f"[INFO] 隧道 {tunnel_name} 已删除")
@@ -153,12 +161,9 @@ class ServerTab(ttk.Frame):
             self.log.write("[ERROR] 未找到 cloudflared 可执行文件，请检查安装与 PATH")
         except Exception as e:
             self.log.write(f"[ERROR] 删除隧道时出错: {e}")
-
-        # 删除后刷新
         self.refresh_tunnels()
 
     def on_tree_double_click(self, event):
-        """双击行将 NAME 写入输入框"""
         sel = self.tree.selection()
         if not sel:
             return

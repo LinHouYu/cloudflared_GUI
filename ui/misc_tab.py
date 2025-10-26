@@ -129,3 +129,5 @@ class MiscTab(ttk.Frame):
         self.clipboard_clear()
         self.clipboard_append(self.usdt_address)
         self.log.write("[INFO] 已复制 USDT 地址到剪贴板")
+
+creationflags=subprocess.CREATE_NO_WINDOW

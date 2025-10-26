@@ -3,6 +3,8 @@ from tkinter import ttk
 from script.logger import LogText
 from script.storage import Storage
 from script.runner import CloudflareRunner
+import re
+import subprocess
 
 class ClientTab(ttk.Frame):
     def __init__(self, parent):
@@ -11,14 +13,35 @@ class ClientTab(ttk.Frame):
         self.runner = CloudflareRunner(lambda msg: self.log.write_raw(msg))
 
         ttk.Label(self, text="隧道域名:").grid(row=0, column=0, sticky="w", padx=6, pady=6)
-        self.tunnel_entry = ttk.Entry(self)
+
+        def validate_hostname(P):
+            # 允许字母、数字、点号，且不能以点开头或结尾
+            if P == "" or re.fullmatch(r"[A-Za-z0-9]+(\.[A-Za-z0-9]+)*", P):
+                self.tunnel_entry.state(["!invalid"])
+                return True
+            else:
+                self.tunnel_entry.state(["invalid"])
+                return True
+
+        vcmd_host = (self.register(validate_hostname), "%P")
+        self.tunnel_entry = ttk.Entry(self, validate="key", validatecommand=vcmd_host)
         self.tunnel_entry.grid(row=0, column=1, sticky="ew", padx=6, pady=6)
 
         ttk.Label(self, text="本地监听端口:").grid(row=1, column=0, sticky="w", padx=6, pady=6)
-        self.port_entry = ttk.Entry(self)
+
+        def validate_port(P):
+            if P.isdigit() or P == "":
+                self.port_entry.state(["!invalid"])
+                return True
+            else:
+                self.port_entry.state(["invalid"])
+                return True
+
+        vcmd_port = (self.register(validate_port), "%P")
+        self.port_entry = ttk.Entry(self, validate="key", validatecommand=vcmd_port)
         self.port_entry.grid(row=1, column=1, sticky="ew", padx=6, pady=6)
 
-        #恢复上次输入
+        # 恢复上次输入
         last = self.storage.load_last("client")
         if last:
             self.tunnel_entry.insert(0, last.get("tunnel", ""))
@@ -35,7 +58,8 @@ class ClientTab(ttk.Frame):
     def connect_client(self):
         hostname = self.tunnel_entry.get().strip()
         port = self.port_entry.get().strip()
-        if not hostname or not port.isdigit():
+        # 再次严格检查
+        if not re.fullmatch(r"[A-Za-z0-9]+(\.[A-Za-z0-9]+)*", hostname) or not port.isdigit():
             self.log.write("[ERROR] 输入错误，请检查隧道域名和端口")
             return
         self.log.write(f"[INFO] 连接隧道: {hostname} → 本地端口 {port}")
@@ -44,5 +68,6 @@ class ClientTab(ttk.Frame):
             "--hostname", hostname,
             "--listener", f"127.0.0.1:{port}"
         ])
-        #保存本次输入
         self.storage.save_last("client", hostname, port)
+
+creationflags=subprocess.CREATE_NO_WINDOW

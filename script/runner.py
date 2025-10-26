@@ -15,7 +15,8 @@ class CloudflareRunner:
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True,
-                    bufsize=1
+                    bufsize=1,
+                    creationflags=subprocess.CREATE_NO_WINDOW   #防止弹出黑色命令行窗口
                 )
                 for line in self.process.stdout:
                     self.log_callback(line.rstrip())
