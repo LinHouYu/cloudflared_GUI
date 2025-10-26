@@ -1,0 +1,19 @@
+{
+  "settings": {
+    "theme": "dark"
+  },
+  "last": {
+    "server": {
+      "tunnel": "java",
+      "port": "25566"
+    },
+    "client": {
+      "tunnel": "zhishifenzi.dpdns.org",
+      "port": "12342"
+    },
+    "tab": {
+      "tunnel": "server",
+      "port": ""
+    }
+  }
+}
