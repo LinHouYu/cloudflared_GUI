@@ -14,7 +14,7 @@ Types if import:
 IMPORTANT: Do NOT post this list to the issue-tracker. Use it as a basis for
             tracking down the missing module yourself. Thanks!
 
-missing module named 'collections.abc' - imported by tracemalloc (top-level), typing (top-level), traceback (top-level), _colorize (top-level), logging (top-level), selectors (top-level), http.client (top-level), importlib.resources.readers (top-level), inspect (top-level), PIL.Image (top-level), PIL._typing (top-level), xml.etree.ElementTree (top-level), PIL.TiffImagePlugin (top-level), PIL.ImageOps (top-level), PIL.ImagePalette (top-level), PIL.GimpGradientFile (conditional), PIL.ImageFilter (top-level), PIL.ImageQt (conditional), PIL.ImageMath (conditional), PIL.ImageSequence (conditional), PIL.PngImagePlugin (conditional), PIL.Jpeg2KImagePlugin (conditional)
+missing module named 'collections.abc' - imported by _colorize (top-level), typing (top-level), traceback (top-level), logging (top-level), selectors (top-level), http.client (top-level), importlib.resources.readers (top-level), inspect (top-level), tracemalloc (top-level), PIL.Image (top-level), PIL._typing (top-level), xml.etree.ElementTree (top-level), PIL.TiffImagePlugin (top-level), PIL.ImageOps (top-level), PIL.ImagePalette (top-level), PIL.GimpGradientFile (conditional), PIL.ImageFilter (top-level), PIL.ImageQt (conditional), PIL.ImageMath (conditional), PIL.ImageSequence (conditional), PIL.PngImagePlugin (conditional), PIL.Jpeg2KImagePlugin (conditional)
 missing module named _scproxy - imported by urllib.request (conditional)
 missing module named posix - imported by posixpath (optional), shutil (conditional), importlib._bootstrap_external (conditional), pathlib._os (optional), os (conditional, optional)
 missing module named resource - imported by posix (top-level)
@@ -27,3 +27,14 @@ missing module named _posixsubprocess - imported by subprocess (conditional)
 missing module named numpy - imported by PIL._typing (conditional, optional)
 missing module named olefile - imported by PIL.FpxImagePlugin (top-level), PIL.MicImagePlugin (top-level)
 missing module named defusedxml - imported by PIL.Image (optional)
+missing module named 'gi.repository' - imported by pystray._appindicator (top-level), pystray._util.gtk (top-level), pystray._util.notify_dbus (top-level), pystray._gtk (top-level)
+missing module named gi - imported by pystray._appindicator (top-level), pystray._util.gtk (top-level), pystray._util.notify_dbus (top-level), pystray._gtk (top-level)
+runtime module named six.moves - imported by pystray._base (top-level), pystray._win32 (top-level), pystray._xorg (top-level)
+missing module named StringIO - imported by six (conditional)
+missing module named 'Xlib.XK' - imported by pystray._xorg (top-level)
+missing module named 'Xlib.threaded' - imported by pystray._xorg (top-level)
+missing module named Xlib - imported by pystray._xorg (top-level)
+missing module named PyObjCTools - imported by pystray._darwin (top-level)
+missing module named objc - imported by pystray._darwin (top-level)
+missing module named Foundation - imported by pystray._darwin (top-level)
+missing module named AppKit - imported by pystray._darwin (top-level)

@@ -44,9 +44,12 @@ class ServerTab(ttk.Frame):
             self.tunnel_entry.insert(0, last.get("tunnel", ""))
             self.port_entry.insert(0, last.get("port", ""))
 
+        #按钮区
         ttk.Button(self, text="创建隧道", command=self.create_tunnel).grid(row=2, column=0, padx=6, pady=8)
         ttk.Button(self, text="启动隧道", command=self.start_tunnel).grid(row=2, column=1, padx=6, pady=8, sticky="w")
+        ttk.Button(self, text="停止隧道", command=self.stop_tunnel).grid(row=2, column=2, padx=6, pady=8, sticky="w")
 
+        #隧道列表
         columns = ("id", "name", "created", "connections")
         self.tree = ttk.Treeview(self, columns=columns, show="headings", height=10)
         self.tree.heading("id", text="ID")
@@ -57,18 +60,21 @@ class ServerTab(ttk.Frame):
         self.tree.column("name", width=160, anchor="w")
         self.tree.column("created", width=170, anchor="w")
         self.tree.column("connections", width=260, anchor="w")
-        self.tree.grid(row=3, column=0, columnspan=2, sticky="nsew", padx=6, pady=6)
+        self.tree.grid(row=3, column=0, columnspan=3, sticky="nsew", padx=6, pady=6)
 
+        #双击选择隧道
         self.tree.bind("<Double-1>", self.on_tree_double_click)
 
+        #工具栏
         bar = ttk.Frame(self)
-        bar.grid(row=4, column=0, columnspan=2, sticky="ew", padx=6, pady=2)
+        bar.grid(row=4, column=0, columnspan=3, sticky="ew", padx=6, pady=2)
         ttk.Button(bar, text="刷新隧道列表", command=self.refresh_tunnels).pack(side="left", padx=2)
         ttk.Button(bar, text="删除隧道", command=self.delete_tunnel).pack(side="left", padx=2)
         ttk.Button(bar, text="清空日志", command=self.clear_log).pack(side="left", padx=2)
 
+        #日志
         self.log = LogText(self, height=10)
-        self.log.grid(row=5, column=0, columnspan=2, sticky="nsew", padx=6, pady=6)
+        self.log.grid(row=5, column=0, columnspan=3, sticky="nsew", padx=6, pady=6)
 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(3, weight=1)
@@ -94,9 +100,15 @@ class ServerTab(ttk.Frame):
         if not name.isalpha() or not port.isdigit():
             self.log.write("[ERROR] 隧道名或端口错误")
             return
-        self.runner.run_command(["cloudflared", "tunnel", "--name", name, "--url", f"tcp://127.0.0.1:{port}"])
+        self.runner.run_command(
+            ["cloudflared", "tunnel", "--name", name, "--url", f"tcp://127.0.0.1:{port}"],
+            return_process=True
+        )
         self.log.write(f"[INFO] 已启动隧道 {name} 端口 {port}")
         self.storage.save_last("server", name, port)
+
+    def stop_tunnel(self):
+        self.runner.stop()
 
     def refresh_tunnels(self):
         self.tree.delete(*self.tree.get_children())
@@ -106,7 +118,7 @@ class ServerTab(ttk.Frame):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW   #防止弹出黑框
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             lines = result.stdout.splitlines()
             count = 0
@@ -151,7 +163,7 @@ class ServerTab(ttk.Frame):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW   #防止弹出黑框
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             if result.returncode == 0:
                 self.log.write(f"[INFO] 隧道 {tunnel_name} 已删除")

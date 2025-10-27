@@ -13,7 +13,7 @@
     },
     "client": {
       "tunnel": "zhishifenzi.dpdns.org",
-      "port": "25565"
+      "port": "2221"
     }
   }
 }

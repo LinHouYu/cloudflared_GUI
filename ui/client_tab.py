@@ -15,7 +15,7 @@ class ClientTab(ttk.Frame):
         ttk.Label(self, text="隧道域名:").grid(row=0, column=0, sticky="w", padx=6, pady=6)
 
         def validate_hostname(P):
-            # 允许字母、数字、点号，且不能以点开头或结尾
+            #允许字母、数字、点号，且不能以点开头或结尾
             if P == "" or re.fullmatch(r"[A-Za-z0-9]+(\.[A-Za-z0-9]+)*", P):
                 self.tunnel_entry.state(["!invalid"])
                 return True
@@ -41,14 +41,19 @@ class ClientTab(ttk.Frame):
         self.port_entry = ttk.Entry(self, validate="key", validatecommand=vcmd_port)
         self.port_entry.grid(row=1, column=1, sticky="ew", padx=6, pady=6)
 
-        # 恢复上次输入
+        #恢复上次输入
         last = self.storage.load_last("client")
         if last:
             self.tunnel_entry.insert(0, last.get("tunnel", ""))
             self.port_entry.insert(0, last.get("port", ""))
 
-        ttk.Button(self, text="连接", command=self.connect_client).grid(row=2, column=0, columnspan=2, pady=10)
+        #按钮区：连接 + 暂停
+        btn_frame = ttk.Frame(self)
+        btn_frame.grid(row=2, column=0, columnspan=2, pady=10)
+        ttk.Button(btn_frame, text="连接", command=self.connect_client).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="暂停连接", command=self.stop_client).pack(side="left", padx=5)
 
+        #日志框
         self.log = LogText(self, height=12)
         self.log.grid(row=3, column=0, columnspan=2, sticky="nsew", padx=6, pady=6)
 
@@ -58,16 +63,22 @@ class ClientTab(ttk.Frame):
     def connect_client(self):
         hostname = self.tunnel_entry.get().strip()
         port = self.port_entry.get().strip()
-        # 再次严格检查
+        #再次严格检查
         if not re.fullmatch(r"[A-Za-z0-9]+(\.[A-Za-z0-9]+)*", hostname) or not port.isdigit():
             self.log.write("[ERROR] 输入错误，请检查隧道域名和端口")
             return
         self.log.write(f"[INFO] 连接隧道: {hostname} → 本地端口 {port}")
-        self.runner.run_command([
-            "cloudflared", "access", "tcp",
-            "--hostname", hostname,
-            "--listener", f"127.0.0.1:{port}"
-        ])
+        self.runner.run_command(
+            [
+                "cloudflared", "access", "tcp",
+                "--hostname", hostname,
+                "--listener", f"127.0.0.1:{port}"
+            ],
+            return_process=True
+        )
         self.storage.save_last("client", hostname, port)
 
-creationflags=subprocess.CREATE_NO_WINDOW
+    def stop_client(self):
+        """停止当前连接"""
+        self.runner.stop()
+        self.log.write("[INFO] 已暂停连接")

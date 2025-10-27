@@ -2,14 +2,14 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess, webbrowser, threading
 from script.logger import LogText
-from PIL import Image, ImageTk 
+from PIL import Image, ImageTk
 from utils import resource_path
 
 class MiscTab(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        # 按钮区
+        #按钮区
         btn_frame = ttk.Frame(self)
         btn_frame.pack(pady=10)
 
@@ -18,15 +18,15 @@ class MiscTab(ttk.Frame):
         ttk.Button(btn_frame, text="更新 cloudflared", command=self.update_cloudflared).pack(side="left", padx=5)
         ttk.Button(btn_frame, text="下载 cloudflared", command=self.download_cloudflared).pack(side="left", padx=5)
 
-        # 日志框
+        #日志框
         self.log = LogText(self, height=3)
         self.log.pack(fill="x", padx=10, pady=10)
 
-        # 打赏区（微信 + USDT 并排）
+        #打赏区（微信 + USDT 并排）
         donate_frame = ttk.LabelFrame(self, text="打赏")
         donate_frame.pack(pady=10)
 
-        # 微信二维码
+        #微信二维码
         try:
             img = Image.open(resource_path("ui/wechat.png"))
             img = img.resize((200, 200))
@@ -38,7 +38,7 @@ class MiscTab(ttk.Frame):
         except Exception:
             ttk.Label(donate_frame, text="未找到微信二维码图片").pack(side="left", padx=20)
 
-        # USDT 二维码 + 地址
+        #USDT 二维码 + 地址
         try:
             cimg = Image.open(resource_path("ui/usdt.png"))
             cimg = cimg.resize((200, 200))
@@ -48,7 +48,7 @@ class MiscTab(ttk.Frame):
             tk.Label(usdt_frame, image=self.usdt_img).pack()
             ttk.Label(usdt_frame, text="USDT 打赏 (TRC20)").pack(pady=5)
 
-            # 可点击复制的地址
+            #可点击复制的地址
             self.usdt_address = "TQhtmLB9A7xjjPzXJZv95g7XzRo5QhXFVq"
             addr_label = ttk.Label(usdt_frame, text=f"地址: {self.usdt_address}", foreground="blue", cursor="hand2")
             addr_label.pack()
@@ -69,10 +69,16 @@ class MiscTab(ttk.Frame):
         bili.pack(anchor="w", padx=10, pady=2)
         bili.bind("<Button-1>", lambda e: webbrowser.open("https://space.bilibili.com/1563740453"))
 
-    # ===== 功能函数 =====
+    #功能函数
     def check_version(self):
         try:
-            result = subprocess.run(["cloudflared", "--version"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            result = subprocess.run(
+                ["cloudflared", "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
             self.log.write(result.stdout.strip())
         except FileNotFoundError:
             self.log.write("[ERROR] 未找到 cloudflared，请检查安装")
@@ -81,7 +87,13 @@ class MiscTab(ttk.Frame):
 
     def update_cloudflared(self):
         try:
-            result = subprocess.run(["cloudflared", "update"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            result = subprocess.run(
+                ["cloudflared", "update"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
             self.log.write(result.stdout.strip())
         except FileNotFoundError:
             self.log.write("[ERROR] 未找到 cloudflared，请检查安装")
@@ -95,7 +107,8 @@ class MiscTab(ttk.Frame):
                 ["cloudflared", "tunnel", "login"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                text=True
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             self.log.write("[INFO] 已启动 Cloudflared 授权，请在浏览器完成登录")
 
@@ -106,7 +119,7 @@ class MiscTab(ttk.Frame):
                         self.log.after(0, lambda l=line: self.log.write(l))
                         if "https://" in line:
                             self.log.after(0, lambda l=line: self.log.write(f"[INFO] 请手动打开以下链接完成授权: {l}"))
-                            # 自动复制到剪贴板
+                            #自动复制到剪贴板
                             self.clipboard_clear()
                             self.clipboard_append(line)
                             self.log.after(0, lambda: self.log.write("[INFO] 已复制授权链接到剪贴板"))
@@ -129,5 +142,3 @@ class MiscTab(ttk.Frame):
         self.clipboard_clear()
         self.clipboard_append(self.usdt_address)
         self.log.write("[INFO] 已复制 USDT 地址到剪贴板")
-
-creationflags=subprocess.CREATE_NO_WINDOW
