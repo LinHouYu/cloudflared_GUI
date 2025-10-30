@@ -1,0 +1,19 @@
+{
+  "lang_button": "中",
+  "title": "Cloudflared Tunnel GUI",
+  "header": "Cloudflared - 简体版",
+  "tabs": { "server": "服务端", "client": "客户端", "misc": "杂项" },
+  "server_tab": {
+    "labels": { "隧道名字:": "隧道名字:", "端口号:": "端口号:" },
+    "buttons": { "创建隧道": "创建隧道", "启动隧道": "启动隧道", "停止隧道": "停止隧道", "刷新隧道列表": "刷新隧道列表", "删除隧道": "删除隧道", "清空日志": "清空日志" }
+  },
+  "client_tab": {
+    "labels": { "隧道域名:": "隧道域名:", "本地监听端口:": "本地监听端口:" },
+    "buttons": { "连接": "连接", "暂停连接": "暂停连接" }
+  },
+  "misc_tab": {
+    "labels": { "打赏": "打赏", "微信打赏": "微信打赏", "未找到微信二维码图片": "未找到微信二维码图片", "USDT 打赏 (TRC20)": "USDT 打赏 (TRC20)", "地址:": "地址:", "未找到 USDT 收款二维码": "未找到 USDT 收款二维码", "关于我": "关于我", "GitHub": "GitHub", "Bilibili": "Bilibili" },
+    "buttons": { "Cloudflared 授权登录": "Cloudflared 授权登录", "检查 cloudflared 版本": "检查 cloudflared 版本", "更新 cloudflared": "更新 cloudflared", "下载 cloudflared": "下载 cloudflared" }
+  },
+  "tray": { "show": "显示窗口", "quit": "退出", "tooltip": "Cloudflared GUI" }
+}

@@ -1,0 +1,19 @@
+{
+  "lang_button": "ES",
+  "title": "Cloudflared Tunnel GUI",
+  "header": "Cloudflared Tunnel GUI - Español",
+  "tabs": { "server": "Servidor", "client": "Cliente", "misc": "Varios" },
+  "server_tab": {
+    "labels": { "隧道名字:": "Nombre del túnel:", "端口号:": "Puerto:" },
+    "buttons": { "创建隧道": "Crear túnel", "启动隧道": "Iniciar túnel", "停止隧道": "Detener túnel", "刷新隧道列表": "Actualizar lista", "删除隧道": "Eliminar túnel", "清空日志": "Limpiar log" }
+  },
+  "client_tab": {
+    "labels": { "隧道域名:": "Dominio del túnel:", "本地监听端口:": "Puerto local:" },
+    "buttons": { "连接": "Conectar", "暂停连接": "Desconectar" }
+  },
+  "misc_tab": {
+    "labels": { "打赏": "Donar", "微信打赏": "Donar WeChat", "未找到微信二维码图片": "QR de WeChat no encontrado", "USDT 打赏 (TRC20)": "Donar USDT (TRC20)", "地址:": "Dirección:", "未找到 USDT 收款二维码": "QR de USDT no encontrado", "关于我": "Sobre mí", "GitHub": "GitHub", "Bilibili": "Bilibili" },
+    "buttons": { "Cloudflared 授权登录": "Iniciar sesión Cloudflared", "检查 cloudflared 版本": "Verificar versión", "更新 cloudflared": "Actualizar", "下载 cloudflared": "Descargar" }
+  },
+  "tray": { "show": "Mostrar ventana", "quit": "Salir", "tooltip": "Cloudflared GUI" }
+}

@@ -44,10 +44,13 @@ class ServerTab(ttk.Frame):
             self.tunnel_entry.insert(0, last.get("tunnel", ""))
             self.port_entry.insert(0, last.get("port", ""))
 
-        #按钮区
-        ttk.Button(self, text="创建隧道", command=self.create_tunnel).grid(row=2, column=0, padx=6, pady=8)
-        ttk.Button(self, text="启动隧道", command=self.start_tunnel).grid(row=2, column=1, padx=6, pady=8, sticky="w")
-        ttk.Button(self, text="停止隧道", command=self.stop_tunnel).grid(row=2, column=2, padx=6, pady=8, sticky="w")
+        #按钮区：放在一个居中的 Frame 里
+        btn_frame = ttk.Frame(self)
+        btn_frame.grid(row=2, column=0, columnspan=3, pady=8)  # 占据三列，居中
+
+        ttk.Button(btn_frame, text="创建隧道", command=self.create_tunnel).pack(side="left", padx=10)
+        ttk.Button(btn_frame, text="启动隧道", command=self.start_tunnel).pack(side="left", padx=10)
+        ttk.Button(btn_frame, text="停止隧道", command=self.stop_tunnel).pack(side="left", padx=10)
 
         #隧道列表
         columns = ("id", "name", "created", "connections")
@@ -65,12 +68,14 @@ class ServerTab(ttk.Frame):
         #双击选择隧道
         self.tree.bind("<Double-1>", self.on_tree_double_click)
 
-        #工具栏
+        #工具栏：放在一个居中的 Frame 里
         bar = ttk.Frame(self)
-        bar.grid(row=4, column=0, columnspan=3, sticky="ew", padx=6, pady=2)
-        ttk.Button(bar, text="刷新隧道列表", command=self.refresh_tunnels).pack(side="left", padx=2)
-        ttk.Button(bar, text="删除隧道", command=self.delete_tunnel).pack(side="left", padx=2)
-        ttk.Button(bar, text="清空日志", command=self.clear_log).pack(side="left", padx=2)
+        bar.grid(row=4, column=0, columnspan=3, pady=6)  # 占据三列，居中
+
+        ttk.Button(bar, text="刷新隧道列表", command=self.refresh_tunnels).pack(side="left", padx=10)
+        ttk.Button(bar, text="删除隧道", command=self.delete_tunnel).pack(side="left", padx=10)
+        ttk.Button(bar, text="清空日志", command=self.clear_log).pack(side="left", padx=10)
+
 
         #日志
         self.log = LogText(self, height=10)

@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\cloudflared.ico', '.'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\ui', 'ui'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\data', 'data'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\ui\\wechat.png', 'ui'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\ui\\usdt.png', 'ui')],
+    datas=[('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\cloudflared.ico', '.'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\ui', 'ui'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\data', 'data'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\ui\\wechat.png', 'ui'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\ui\\usdt.png', 'ui'), ('C:\\Users\\zhish\\Desktop\\cloudflared_GUI\\lenguaje', 'lenguaje')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

@@ -1,19 +1,12 @@
 {
   "settings": {
-    "theme": "dark"
+    "theme": "dark",
+    "lang": "es"
   },
   "last": {
     "tab": {
-      "tunnel": "server",
+      "tunnel": "client",
       "port": ""
-    },
-    "server": {
-      "tunnel": "mc",
-      "port": "25565"
-    },
-    "client": {
-      "tunnel": "zhishifenzi.dpdns.org",
-      "port": "2221"
     }
   }
 }
