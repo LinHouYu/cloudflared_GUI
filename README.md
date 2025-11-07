@@ -22,9 +22,12 @@
 
 ---
 
-## 📦 安装与运行
+# Cloudflared GUI 使用教程
 
-### 1. 克隆仓库
-```bash
-git clone https://github.com/你的仓库地址.git
-cd CloudflaredGUI
+## 视频教学
+如果你想快速上手 Cloudflared GUI，这里有一个详细的视频教程：  
+🎬 【《Minecraft 联机神器！Cloudflared GUI 超简单教学》】  
+👉 [点击观看](https://www.bilibili.com/video/BV11fyiB9Exx/?share_source=copy_web&vd_source=af1b836b3dccf648b1eeecc5e9541b1e)
+
+该视频演示了如何安装、配置和使用 Cloudflared GUI 来实现 Minecraft 联机，步骤清晰，非常适合新手参考。
+
