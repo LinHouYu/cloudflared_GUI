@@ -113,16 +113,22 @@ class MiscTab(ttk.Frame):
             self.log.write("[INFO] 已启动 Cloudflared 授权，请在浏览器完成登录")
 
             def reader():
+                opened = False  # 防止重复打开浏览器
                 for line in process.stdout:
                     line = line.strip()
                     if line:
+                        # 输出到日志
                         self.log.after(0, lambda l=line: self.log.write(l))
-                        if "https://" in line:
+                        if "https://" in line and not opened:
+                            opened = True
+                            # 打印提示
                             self.log.after(0, lambda l=line: self.log.write(f"[INFO] 请手动打开以下链接完成授权: {l}"))
-                            #自动复制到剪贴板
+                            # 自动复制到剪贴板
                             self.clipboard_clear()
                             self.clipboard_append(line)
                             self.log.after(0, lambda: self.log.write("[INFO] 已复制授权链接到剪贴板"))
+                            # 自动打开浏览器
+                            webbrowser.open(line)
 
             threading.Thread(target=reader, daemon=True).start()
 
