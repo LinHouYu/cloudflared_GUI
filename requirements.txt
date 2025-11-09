@@ -1,0 +1,4 @@
+sv_ttk==2.6.1
+pillow==12.0.0
+pystray==0.19.5
+psutil==7.1.3

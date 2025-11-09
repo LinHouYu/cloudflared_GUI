@@ -31,27 +31,29 @@ def safe_kill_tunnel(pid):
         except Exception:
             pass
 
-# 检测隧道是否在运行
+# 检测隧道是否在运行（只依赖存储的 PID）
 def is_tunnel_running(app):
-    pid = None
     try:
         pid = app.storage.load_last("tunnel_pid")
     except Exception:
-        pid = None
-    if pid:
-        try:
-            p = psutil.Process(pid)
-            if p.is_running():
-                return True, pid
-        except Exception:
-            pass
-    for proc in psutil.process_iter(attrs=["name", "cmdline"]):
-        try:
-            if "cloudflared" in (proc.info["name"] or "").lower() or \
-               any("cloudflared" in (arg or "") for arg in (proc.info["cmdline"] or [])):
-                return True, proc.pid
-        except Exception:
-            continue
+        return False, None
+
+    if not pid:
+        return False, None
+
+    try:
+        p = psutil.Process(pid)
+        if p.is_running() and "cloudflared" in (p.name() or "").lower():
+            return True, pid
+    except Exception:
+        pass
+
+    # 如果 PID 已失效，清理掉存储，避免下次误判
+    try:
+        app.storage.save_last("tunnel_pid", None)
+    except Exception:
+        pass
+
     return False, None
 
 # 创建托盘图标
@@ -69,19 +71,38 @@ def create_tray_icon(app, pack):
 
     def on_quit(icon, item):
         running, pid = is_tunnel_running(app)
+
         if running and pid:
-            if msg.askyesno(confirm_title, confirm_close):
+            # 有隧道 → 弹提示，绑定主窗口
+            if msg.askyesno(confirm_title, confirm_close, parent=app.parent):
                 safe_kill_tunnel(pid)
+                # 清理残留进程（兜底）
                 for proc in psutil.process_iter(attrs=["name"]):
                     if "cloudflared" in (proc.info["name"] or "").lower():
                         try:
                             proc.kill()
                         except Exception:
                             pass
+                # 清理掉存储的 PID
+                try:
+                    app.storage.save_last("tunnel_pid", None)
+                except Exception:
+                    pass
                 app.quit_app()
             else:
                 return
         else:
+            # 没隧道 → 不弹提示，直接退出并兜底清理
+            for proc in psutil.process_iter(attrs=["name"]):
+                if "cloudflared" in (proc.info["name"] or "").lower():
+                    try:
+                        proc.kill()
+                    except Exception:
+                        pass
+            try:
+                app.storage.save_last("tunnel_pid", None)
+            except Exception:
+                pass
             app.quit_app()
 
     menu = pystray.Menu(

@@ -11,9 +11,9 @@ if __name__ == "__main__":
         f"--add-data={os.path.abspath('cloudflared.ico')}{sep}.",
         f"--add-data={os.path.abspath('ui')}{sep}ui",
         f"--add-data={os.path.abspath('data')}{sep}data",
+        f"--add-data={os.path.abspath('lenguaje')}{sep}lenguaje",
         f"--add-data={os.path.abspath('ui/wechat.png')}{sep}ui",
         f"--add-data={os.path.abspath('ui/usdt.png')}{sep}ui",
-        f"--add-data={os.path.abspath('lenguaje')}{sep}lenguaje",  
         "--clean",
         "--name=CloudflaredGUI"
     ])
