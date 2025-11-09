@@ -50,9 +50,12 @@
       "下载 cloudflared": "下載 cloudflared" 
     }
   },
-  "tray": { 
-    "show": "顯示視窗", 
-    "quit": "退出", 
-    "tooltip": "Cloudflared GUI" 
-  }
+  "tray": {
+  "tooltip": "Cloudflared 图形界面",
+  "show": "显示窗口",
+  "quit": "退出",
+  "confirm_title": "提示",
+  "confirm_close": "喵~ 你有一个隧道在运行，确定要关闭吗？"
+}
+
 }

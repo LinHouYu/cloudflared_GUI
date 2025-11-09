@@ -15,5 +15,12 @@
     "labels": { "打赏": "打赏", "微信打赏": "微信打赏", "未找到微信二维码图片": "未找到微信二维码图片", "USDT 打赏 (TRC20)": "USDT 打赏 (TRC20)", "地址:": "地址:", "未找到 USDT 收款二维码": "未找到 USDT 收款二维码", "关于我": "关于我", "GitHub": "GitHub", "Bilibili": "Bilibili" },
     "buttons": { "Cloudflared 授权登录": "Cloudflared 授权登录", "检查 cloudflared 版本": "检查 cloudflared 版本", "更新 cloudflared": "更新 cloudflared", "下载 cloudflared": "下载 cloudflared" }
   },
-  "tray": { "show": "显示窗口", "quit": "退出", "tooltip": "Cloudflared GUI" }
+  "tray": {
+  "tooltip": "Cloudflared 图形界面",
+  "show": "显示窗口",
+  "quit": "退出",
+  "confirm_title": "提示",
+  "confirm_close": "喵~ 你有一个隧道在运行，确定要关闭吗？"
+  }
+  
 }

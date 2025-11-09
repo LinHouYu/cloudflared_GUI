@@ -15,5 +15,12 @@
     "labels": { "打赏": "Donar", "微信打赏": "Donar WeChat", "未找到微信二维码图片": "QR de WeChat no encontrado", "USDT 打赏 (TRC20)": "Donar USDT (TRC20)", "地址:": "Dirección:", "未找到 USDT 收款二维码": "QR de USDT no encontrado", "关于我": "Sobre mí", "GitHub": "GitHub", "Bilibili": "Bilibili" },
     "buttons": { "Cloudflared 授权登录": "Iniciar sesión Cloudflared", "检查 cloudflared 版本": "Verificar versión", "更新 cloudflared": "Actualizar", "下载 cloudflared": "Descargar" }
   },
-  "tray": { "show": "Mostrar ventana", "quit": "Salir", "tooltip": "Cloudflared GUI" }
+  "tray": {
+  "tooltip": "Cloudflared GUI",
+  "show": "Mostrar ventana",
+  "quit": "Salir",
+  "confirm_title": "Aviso",
+  "confirm_close": "Miau~ Hay un túnel en ejecución. ¿Quieres cerrarlo?"
+}
+
 }

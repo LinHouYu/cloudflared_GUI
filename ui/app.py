@@ -1,38 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 import sv_ttk
-import threading
-import pystray
-import os
-import json
-from PIL import Image
 from ui.server_tab import ServerTab
 from ui.client_tab import ClientTab
 from ui.misc_tab import MiscTab
 from script.storage import Storage
+from ui.lenguaje import LANG_DATA, LANG_ORDER, load_all_languages
+from ui import tray
 from utils import resource_path
 
-LANG_DATA = {}
-LANG_ORDER = []
-
-#加载所有语言文件
-def load_all_languages():
-    global LANG_DATA, LANG_ORDER
-    LANG_DATA.clear()
-    LANG_ORDER.clear()
-    lang_dir = resource_path("lenguaje")
-    if not os.path.isdir(lang_dir):
-        raise RuntimeError("缺少lenguaje文件夹")
-    for fname in sorted(os.listdir(lang_dir)):
-        if fname.endswith(".json"):
-            key = os.path.splitext(fname)[0]
-            with open(os.path.join(lang_dir, fname), "r", encoding="utf-8") as f:
-                LANG_DATA[key] = json.load(f)
-                LANG_ORDER.append(key)
-    if not LANG_ORDER:
-        raise RuntimeError("没有语言文件")
-
-load_all_languages()
 
 class App(ttk.Frame):
     def __init__(self, parent: tk.Tk):
@@ -41,12 +17,14 @@ class App(ttk.Frame):
         self.parent = parent
         self.icon = None
 
-        #加载主题
+        #加载语言文件
+        load_all_languages()
+
+        #加载主题和语言设置
         settings = self.storage.load_settings()
         theme = settings.get("theme", "light")
         sv_ttk.set_theme(theme)
 
-        #加载语言
         saved_lang = settings.get("lang")
         self.current_lang = saved_lang if saved_lang in LANG_ORDER else LANG_ORDER[0]
         pack = LANG_DATA[self.current_lang]
@@ -75,7 +53,7 @@ class App(ttk.Frame):
 
         #语言选择下拉框
         self.lang_var = tk.StringVar()
-        self.lang_map = {}  # 显示文本→lang_key
+        self.lang_map = {}
         choices = []
         for lang in LANG_ORDER:
             label = LANG_DATA[lang].get("lang_button", lang)
@@ -85,16 +63,17 @@ class App(ttk.Frame):
         current_label = LANG_DATA[self.current_lang].get("lang_button", self.current_lang)
         current_display = f"{current_label} ({self.current_lang})"
         self.lang_var.set(current_display)
-        self.lang_combo = ttk.Combobox(button_frame, textvariable=self.lang_var, values=choices, state="readonly", width=12)
-        self.lang_combo.pack(side="left", padx=(0,5))
+        self.lang_combo = ttk.Combobox(button_frame, textvariable=self.lang_var,
+                                       values=choices, state="readonly", width=12)
+        self.lang_combo.pack(side="left", padx=(0, 5))
         self.lang_combo.bind("<<ComboboxSelected>>", self.on_lang_selected)
 
-        #主题切换按钮 ☀/🌙
+        #主题切换按钮
         icon = "☀" if theme == "light" else "🌙"
         self.theme_button = ttk.Button(button_frame, text=icon, width=3, command=self.toggle_theme)
         self.theme_button.pack(side="left")
 
-        #标签页
+        #Notebook标签页
         self.notebook = ttk.Notebook(self.parent)
         self.notebook.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
 
@@ -140,11 +119,7 @@ class App(ttk.Frame):
                     tab.log.set_theme(current)
                 except:
                     pass
-        #更新按钮图标
-        if current == "light":
-            self.theme_button.config(text="☀")
-        else:
-            self.theme_button.config(text="🌙")
+        self.theme_button.config(text="☀" if current == "light" else "🌙")
 
     #下拉框选择语言
     def on_lang_selected(self, event):
@@ -183,7 +158,7 @@ class App(ttk.Frame):
             except:
                 pass
             self.icon = None
-            self.create_tray_icon()
+            self.hide_to_tray()
 
     #更新标签页文字
     def update_tab_texts(self, tab, lang_map: dict):
@@ -228,29 +203,8 @@ class App(ttk.Frame):
     def hide_to_tray(self):
         self.parent.withdraw()
         if self.icon is None:
-            self.create_tray_icon()
-
-
-
-    #创建托盘图标
-    def create_tray_icon(self):
-        pack = LANG_DATA[self.current_lang]
-        tooltip = pack.get("tray", {}).get("tooltip", "Cloudflared GUI")
-        show_text = pack.get("tray", {}).get("show", "Show Window")
-        quit_text = pack.get("tray", {}).get("quit", "Quit")
-
-        try:
-            image = Image.open(resource_path("cloudflared.ico"))
-        except:
-            image = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
-
-        menu = pystray.Menu(
-            pystray.MenuItem(show_text, self.show_window, default=True),
-            pystray.MenuItem(quit_text, self.quit_app)
-        )
-
-        self.icon = pystray.Icon("cloudflared_gui", image, tooltip, menu=menu)
-        threading.Thread(target=self.icon.run, daemon=True).start()
+            pack = LANG_DATA[self.current_lang]
+            self.icon = tray.create_tray_icon(self, pack)
 
     #显示窗口
     def show_window(self, icon=None, item=None):
@@ -277,11 +231,13 @@ class App(ttk.Frame):
         except:
             pass
 
+
 #入口
 def main():
     root = tk.Tk()
     App(root)
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
